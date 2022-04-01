@@ -1,10 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <limits.h>
 int main(int argc, char *argv[])
 {
 	if (argc == 3)
 	{	
-		int N = atoi(argv[2]);
+		char *endptr;
+		errno = 0;
+	        long N = strtol(argv[2],&endptr,10);
+		if ((errno == ERANGE && (N == LONG_MAX || N == LONG_MIN))
+                   || (errno != 0 && N == 0))
+               {
+               	perror("strtol");
+               	exit(EXIT_FAILURE);
+           	}
+			
+		if (endptr == argv[2]) {
+               	fprintf(stderr, "No digits were found\n");
+               	exit(EXIT_FAILURE);
+           	}
+
 		if (N<0)
 			fputs("Second param must be above or equale to 0\n",stderr);
 		else
